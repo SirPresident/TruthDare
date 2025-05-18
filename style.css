@@ -1,3 +1,211 @@
-body { font-family: sans-serif; text-align: center; padding: 2rem; }
-button { margin: .5rem; padding: .5rem 1rem; }
-#card { margin-top: 2rem; border: 1px solid #ccc; padding: 1rem; display: inline-block; }
+/* --- Root Variables & Basic Setup --- */
+:root {
+  --bg-color: #ffffff;
+  --fg-color: #000000;
+  --border-stroke-width: 2px;
+
+  --font-title: 'Kranky', 'Rock Salt', cursive;
+  --font-body: 'Patrick Hand SC', cursive;
+  --font-ui: 'Patrick Hand SC', cursive;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  line-height: 1.4;
+}
+
+/* --- App Container & Layout --- */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.app-header h1 {
+  font-family: var(--font-title);
+  font-size: 2.5em;
+  transform: rotate(-1.5deg) translate(-2px, -3px);
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  left: 2px; right: -1px;
+  bottom: -5px;
+  height: 1px;
+  background-color: var(--fg-color);
+  transform: rotate(-0.2deg);
+}
+.app-header {
+  border-bottom: var(--border-stroke-width) solid var(--fg-color);
+  padding-bottom: 10px;
+}
+
+/* --- Panels (Name Entry & Question Card) --- */
+.panel {
+  background-color: var(--bg-color);
+  border: var(--border-stroke-width) solid var(--fg-color);
+  border-radius: 4px 6px 3px 5px / 5px 3px 6px 4px;
+  box-shadow: 2px 2px 0 0 var(--fg-color);
+  margin-bottom: 20px;
+  padding: 15px;
+  position: relative;
+}
+.panel-header {
+  font-family: var(--font-ui);
+  font-size: 1.4em;
+  text-align: center;
+  margin-bottom: 10px;
+  transform: rotate(0.5deg) translateX(1px);
+  padding: 4px 8px;
+  border-bottom: 1px dashed var(--fg-color);
+  border-radius: 3px 4px 2px 3px / 2px 3px 3px 4px;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-block;
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  border: var(--border-stroke-width) solid var(--fg-color);
+  padding: 10px 15px;
+  border-radius: 6px 3px 7px 4px / 4px 7px 3px 6px;
+  font-family: var(--font-ui);
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 1px 1px 0 0 var(--fg-color);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+  margin: 5px;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border: 1px solid var(--fg-color);
+  opacity: 0.6;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.btn:hover {
+  transform: translate(1px, 1px) rotate(-1deg);
+  box-shadow: 0 0 0 0 var(--fg-color);
+}
+.btn:active {
+  transform: translate(2px, 2px) rotate(0.5deg);
+  box-shadow: -1px -1px 0 0 var(--fg-color);
+}
+.btn-secondary {
+  background-color: transparent;
+}
+.btn-secondary:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* --- Name Entry Specifics --- */
+#name-entry .panel {
+  display: flex;
+  flex-direction: column;
+}
+#name-entry input {
+  font-family: var(--font-body);
+  padding: 8px;
+  margin-bottom: 10px;
+  border: var(--border-stroke-width) solid var(--fg-color);
+  border-radius: 5px 2px 6px 3px / 3px 6px 2px 5px;
+  box-shadow: 1px 1px 0 0 var(--fg-color);
+}
+#name-entry ul {
+  list-style: none;
+  max-height: 120px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+#name-entry li {
+  padding: 6px 8px;
+  border: 1px solid var(--fg-color);
+  border-radius: 3px 5px 2px 4px / 4px 2px 5px 3px;
+  margin: 4px 0;
+  box-shadow: 1px 1px 0 0 var(--fg-color);
+}
+
+/* --- Game & Question Card --- */
+#game {
+  text-align: center;
+  flex-grow: 1;
+}
+#current-player {
+  font-family: var(--font-title);
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  transform: rotate(-0.8deg) translate(-1px, 2px);
+}
+#card {
+  max-width: 100%;
+  margin: 0 auto;
+}
+#card .panel {
+  position: relative;
+}
+#question {
+  font-size: 1.2em;
+  padding: 10px;
+}
+
+/* --- Footer (Optional) --- */
+.app-footer {
+  text-align: center;
+  padding: 10px 0;
+  border-top: var(--border-stroke-width) solid var(--fg-color);
+  font-family: var(--font-ui);
+  font-size: 0.9em;
+  position: relative;
+  margin-top: 20px;
+}
+.app-footer::before {
+  content: '';
+  position: absolute;
+  left: -1px; right: 2px;
+  top: -5px; height: 1px;
+  background-color: var(--fg-color);
+  transform: rotate(-0.2deg);
+}
+.app-footer p {
+  display: inline-block;
+  transform: rotate(1deg) translate(1px, 1px);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 10px; height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-left: 1px solid var(--fg-color);
+  border-top: 1px solid var(--fg-color);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--fg-color);
+  border-radius: 0;
+  border: 1px solid var(--bg-color);
+}

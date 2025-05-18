@@ -2,29 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Truth or Dare</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pokémon Stat Calculator</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Kranky&family=Patrick+Hand+SC&display=swap" rel="stylesheet"/>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="name-entry">
-    <h1>Enter player names</h1>
-    <input id="new-name" placeholder="Player name" />
-    <button id="add-name">Add</button>
-    <ul id="names-list"></ul>
-    <button id="start-game" disabled>Start Game</button>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>Stat Calc</h1>
+    </header>
+
+    <main class="app-main">
+      <section class="panel">
+        <div class="panel-header">Enter Pokémon Stats</div>
+        <form id="pokemonForm">
+          <label for="baseStat">Base Stat</label>
+          <input type="number" id="baseStat" name="baseStat" placeholder="e.g. 80" required>
+
+          <label for="iv">IV (0–31)</label>
+          <input type="number" id="iv" name="iv" placeholder="e.g. 31" required>
+
+          <label for="ev">EV (0–252)</label>
+          <input type="number" id="ev" name="ev" placeholder="e.g. 252" required>
+
+          <label for="level">Level (1–100)</label>
+          <input type="number" id="level" name="level" placeholder="e.g. 100" required>
+
+          <label for="statType">Stat Type</label>
+          <select id="statType" name="statType">
+            <option value="hp">HP</option>
+            <option value="other">Other Stat</option>
+          </select>
+
+          <div class="editor-actions">
+            <button type="submit" class="btn">Calculate</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="resultPanel" style="display: none;">
+        <div class="panel-header">Calculated Result</div>
+        <div id="resultDisplay" style="padding: 12px; font-size: 1.2em;"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Pokémon Stat Calculator ✦ Hand-drawn Style</p>
+    </footer>
   </div>
 
-  <div id="game" style="display:none">
-    <h2 id="current-player"></h2>
-    <button id="btn-truth">Truth</button>
-    <button id="btn-dare">Dare</button>
+  <!-- Script -->
+  <script>
+    document.getElementById("pokemonForm").addEventListener("submit", function (event) {
+      event.preventDefault();
 
-    <div id="card" style="display:none">
-      <p id="question"></p>
-      <button id="next">Next</button>
-    </div>
-  </div>
+      const baseStat = parseInt(document.getElementById("baseStat").value);
+      const iv = parseInt(document.getElementById("iv").value);
+      const ev = parseInt(document.getElementById("ev").value);
+      const level = parseInt(document.getElementById("level").value);
+      const statType = document.getElementById("statType").value;
 
-  <script src="script.js"></script>
+      let result;
+      if (statType === "hp") {
+        result = Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100 + level + 10);
+      } else {
+        result = Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100 + 5);
+      }
+
+      document.getElementById("resultDisplay").textContent = `Calculated ${statType.toUpperCase()} stat: ${result}`;
+      document.getElementById("resultPanel").style.display = "block";
+    });
+  </script>
 </body>
 </html>
