@@ -3,81 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pokémon Stat Calculator</title>
+  <title>Truth or Dare</title>
   
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Kranky&family=Patrick+Hand+SC&display=swap" rel="stylesheet"/>
-
-  <!-- Custom CSS -->
+  
+  <!-- Your hand-drawn style -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-container">
     <header class="app-header">
-      <h1>Stat Calc</h1>
+      <h1>Truth or Dare</h1>
     </header>
 
-    <main class="app-main">
-      <section class="panel">
-        <div class="panel-header">Enter Pokémon Stats</div>
-        <form id="pokemonForm">
-          <label for="baseStat">Base Stat</label>
-          <input type="number" id="baseStat" name="baseStat" placeholder="e.g. 80" required>
+    <!-- Name Entry Panel -->
+    <section id="name-entry" class="panel">
+      <div class="panel-header">Enter player names</div>
+      <input id="new-name" type="text" placeholder="Player name" />
+      <button id="add-name" class="btn">Add</button>
+      <ul id="names-list"></ul>
+      <button id="start-game" class="btn btn-secondary" disabled>Start Game</button>
+    </section>
 
-          <label for="iv">IV (0–31)</label>
-          <input type="number" id="iv" name="iv" placeholder="e.g. 31" required>
+    <!-- Game Panel -->
+    <section id="game" style="display: none; text-align: center;">
+      <div id="current-player" class="panel-header"></div>
+      <div>
+        <button id="btn-truth" class="btn">Truth</button>
+        <button id="btn-dare"  class="btn">Dare</button>
+      </div>
 
-          <label for="ev">EV (0–252)</label>
-          <input type="number" id="ev" name="ev" placeholder="e.g. 252" required>
-
-          <label for="level">Level (1–100)</label>
-          <input type="number" id="level" name="level" placeholder="e.g. 100" required>
-
-          <label for="statType">Stat Type</label>
-          <select id="statType" name="statType">
-            <option value="hp">HP</option>
-            <option value="other">Other Stat</option>
-          </select>
-
-          <div class="editor-actions">
-            <button type="submit" class="btn">Calculate</button>
-            <button type="reset" class="btn btn-secondary">Reset</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="panel" id="resultPanel" style="display: none;">
-        <div class="panel-header">Calculated Result</div>
-        <div id="resultDisplay" style="padding: 12px; font-size: 1.2em;"></div>
-      </section>
-    </main>
+      <div id="card" class="panel" style="display: none; margin-top: 20px;">
+        <div class="panel-header">Your Challenge</div>
+        <p id="question" style="font-size: 1.2em; padding: 10px;"></p>
+        <button id="next" class="btn btn-secondary">Next</button>
+      </div>
+    </section>
 
     <footer class="app-footer">
-      <p>Pokémon Stat Calculator ✦ Hand-drawn Style</p>
+      <p>Have fun &amp; play safe!</p>
     </footer>
   </div>
 
-  <!-- Script -->
   <script>
-    document.getElementById("pokemonForm").addEventListener("submit", function (event) {
-      event.preventDefault();
+    // --- Data & State ---
+    let players = [];
+    let questions = { truth: [], dare: [] };
+    let currentPlayer = '';
 
-      const baseStat = parseInt(document.getElementById("baseStat").value);
-      const iv = parseInt(document.getElementById("iv").value);
-      const ev = parseInt(document.getElementById("ev").value);
-      const level = parseInt(document.getElementById("level").value);
-      const statType = document.getElementById("statType").value;
+    // --- Elements ---
+    const newName   = document.getElementById('new-name');
+    const addBtn    = document.getElementById('add-name');
+    const namesList = document.getElementById('names-list');
+    const startBtn  = document.getElementById('start-game');
 
-      let result;
-      if (statType === "hp") {
-        result = Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100 + level + 10);
-      } else {
-        result = Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100 + 5);
-      }
+    const nameEntry = document.getElementById('name-entry');
+    const gameSec   = document.getElementById('game');
+    const playerHdr = document.getElementById('current-player');
+    const btnTruth  = document.getElementById('btn-truth');
+    const btnDare   = document.getElementById('btn-dare');
+    const cardDiv   = document.getElementById('card');
+    const questionP = document.getElementById('question');
+    const nextBtn   = document.getElementById('next');
 
-      document.getElementById("resultDisplay").textContent = `Calculated ${statType.toUpperCase()} stat: ${result}`;
-      document.getElementById("resultPanel").style.display = "block";
+    // --- Load questions.json ---
+    fetch('questions.json')
+      .then(res => res.json())
+      .then(data => questions = data)
+      .catch(err => console.error('Could not load questions:', err));
+
+    // --- Add player ---
+    addBtn.addEventListener('click', () => {
+      const name = newName.value.trim();
+      if (!name) return;
+      players.push(name);
+      const li = document.createElement('li');
+      li.textContent = name;
+      namesList.appendChild(li);
+      newName.value = '';
+      startBtn.disabled = players.length < 2;
     });
+
+    // --- Start game ---
+    startBtn.addEventListener('click', () => {
+      nameEntry.style.display = 'none';
+      gameSec.style.display  = 'block';
+      nextTurn();
+    });
+
+    // --- Choose next player at random ---
+    function nextTurn() {
+      cardDiv.style.display = 'none';
+      currentPlayer = players[Math.floor(Math.random() * players.length)];
+      playerHdr.textContent = `${currentPlayer}, choose:`;
+      btnTruth.disabled = btnDare.disabled = false;
+    }
+
+    // --- Handle Truth / Dare buttons ---
+    btnTruth.addEventListener('click', () => showQuestion('truth'));
+    btnDare.addEventListener('click',  () => showQuestion('dare'));
+
+    function showQuestion(type) {
+      btnTruth.disabled = btnDare.disabled = true;
+      const pool = questions[type];
+      const q = pool[Math.floor(Math.random() * pool.length)];
+      questionP.textContent = q;
+      cardDiv.style.display = 'block';
+    }
+
+    // --- Next round ---
+    nextBtn.addEventListener('click', nextTurn);
   </script>
 </body>
 </html>
